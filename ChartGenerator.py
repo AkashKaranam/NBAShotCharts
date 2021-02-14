@@ -9,6 +9,8 @@ teams = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/ma
 players = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/players.json').text)
 # print(teams)
 # print(players)
+
+
 def get_team_id(teamName):
     for team in teams:
         if team['teamName'] == teamName:
@@ -20,34 +22,6 @@ def get_player_id(first,last):
         if player['firstName'] == first and player['lastName'] == last:
             return player['playerId']
     return -1
-# def find_lebron():
-#     bin = []
-#     for player in players:
-#         if player['lastName'] == 'James' or player['firstName'] == 'James':
-#             bin.append(player)
-#     return bin
-
-shot_json = shotchartdetail.ShotChartDetail(
-    team_id = get_team_id('Golden State Warriors'),
-    player_id = get_player_id('Stephen', 'Curry'),
-    context_measure_simple = 'FGA',
-    season_nullable = '2015-16',
-    season_type_all_star = 'Regular Season')
-
-# print(get_team_id('New York Knicks'))
-# print(find_lebron())
-# print(get_player_id('LeBron', 'James'))
-
-shot_data = json.loads(shot_json.get_json())
-relevant_data = shot_data['resultSets'][0]
-
-headers = relevant_data['headers']
-rows = relevant_data['rowSet']
-
-curry_data = pd.DataFrame(rows)
-curry_data.columns = headers
-# print(curry_data.columns)
-
 def create_court(ax, color):
     ax.plot([-220, -220], [0, 140], linewidth=2, color=color)
     ax.plot([220,220], [0,140], linewidth=2, color=color)
@@ -71,6 +45,45 @@ def create_court(ax, color):
     ax.set_ylim(0, 470)
 
     return ax
+# def find_lebron():
+#     bin = []
+#     for player in players:
+#         if player['lastName'] == 'James' or player['firstName'] == 'James':
+#             bin.append(player)
+#     return bin
+player_first_name = input("Enter the player's first name: ")
+player_last_name = input("Enter the player's last name: ")
+player_team = input("Enter the player's team's name: ")
+context_measure_simple = input("Enter either PTS or FGA: ")
+season_nullable = input("Enter the season: ")
+season_type_all_start = input("Enter the season type: ")
+
+team_id = get_team_id(player_team)
+player_id = get_player_id(player_first_name, player_last_name)
+note = player_first_name + " " + player_last_name + "\n" + season_nullable + " " + season_type_all_start
+filename = "ShortChart_" + player_first_name + player_last_name + "_" + season_nullable + ".png"
+shot_json = shotchartdetail.ShotChartDetail(
+    team_id = team_id,
+    player_id = player_id,
+    context_measure_simple = context_measure_simple,
+    season_nullable = season_nullable,
+    season_type_all_star = season_type_all_start)
+
+# print(get_team_id('New York Knicks'))
+# print(find_lebron())
+# print(get_player_id('LeBron', 'James'))
+
+shot_data = json.loads(shot_json.get_json())
+relevant_data = shot_data['resultSets'][0]
+
+headers = relevant_data['headers']
+rows = relevant_data['rowSet']
+
+player_data = pd.DataFrame(rows)
+player_data.columns = headers
+# print(curry_data.columns)
+
+
 
 
 mpl.rcParams['font.family'] = 'Avenir'
@@ -81,10 +94,10 @@ fig = plt.figure(figsize=(4, 3.76))
 ax = fig.add_axes([0, 0, 1, 1])
 
 ax = create_court(ax, 'black')
-ax.hexbin(curry_data['LOC_X'], curry_data['LOC_Y'] + 60, gridsize=(30,30), extent=(-300,300,0,940), bins = 'log', cmap='Blues')
+ax.hexbin(player_data['LOC_X'], player_data['LOC_Y'] + 60, gridsize=(30,30), extent=(-300,300,0,940), bins = 'log', cmap='Blues')
 
-ax.text(0,1.05, 'Stephen Curry\n2015-2016 Regular Season', transform=ax.transAxes, ha = 'left', va = 'baseline')
+ax.text(0, 1.05, note, transform=ax.transAxes, ha = 'left', va = 'baseline')
 
-plt.savefig('ShotCart_FGA_StephCurry_15-16.png', dpi=300, bbox_inches='tight')
+plt.savefig(filename, dpi=300, bbox_inches='tight')
 plt.show()
 
