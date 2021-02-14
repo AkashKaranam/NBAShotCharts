@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 teams = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/teams.json').text)
 players = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/players.json').text)
-
+#print(players)
 def get_team_id(teamName):
     for team in teams:
         if team['teamName'] == teamName:
@@ -19,6 +19,18 @@ def get_player_id(first,last):
         if player['firstName'] == first and player['lastName'] == last:
             return player['playerId']
     return -1
+def get_player_team(first,last):
+    for player in players:
+        if player['firstName'] == first and player['lastName'] == last:
+            team_id = player['teamId']
+            for team in teams:
+                if team_id == team['teamId']:
+                    return team['teamName']
+def get_team_name(teamAbr):
+    for team in teams:
+        if(team['abbreviation'] == teamAbr):
+            return team['teamName']
+
 def create_court(ax, color):
     ax.plot([-220, -220], [0, 140], linewidth=2, color=color)
     ax.plot([220,220], [0,140], linewidth=2, color=color)
@@ -45,9 +57,14 @@ def create_court(ax, color):
 
 player_first_name = input("Enter the player's first name: ")
 player_last_name = input("Enter the player's last name: ")
-player_team = input("Enter the player's team's name: ")
-context_measure_simple = 'FGA'
 season_nullable = input("Enter the season: ")
+if season_nullable == '2020-21':
+    player_team = get_player_team(player_first_name, player_last_name)
+else:
+    player_team_abr = input("Enter the player's team's abbreviation: ")
+    player_team = get_team_name(player_team_abr)
+context_measure_simple = 'FGA'
+
 season_type_all_start = input("Enter the season type: ")
 
 team_id = get_team_id(player_team)
