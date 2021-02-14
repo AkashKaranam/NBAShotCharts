@@ -71,23 +71,26 @@ rows = relevant_data['rowSet']
 player_data = pd.DataFrame(rows)
 player_data.columns = headers
 
-player_makes = player_data.loc[player_data['SHOT_MADE_FLAG'] == 1]
-player_misses = player_data.loc[player_data['SHOT_MADE_FLAG'] == 0]
-
-mpl.rcParams['font.family'] = 'Avenir'
-mpl.rcParams['font.size'] = 18
-mpl.rcParams['axes.linewidth'] = 2
-
-fig = plt.figure(figsize=(4, 3.76))
-ax = fig.add_axes([0, 0, 1, 1])
-
-ax = create_court(ax, 'black')
-
-ax.plot(player_misses['LOC_X'], player_misses['LOC_Y'] + 60, 'ro')
-ax.plot(player_makes['LOC_X'], player_makes['LOC_Y'] + 60, 'go')
+player_data.to_csv('data.csv', index=False)
 
 
-ax.text(0, 1.05, note, transform=ax.transAxes, ha = 'left', va = 'baseline')
-
-plt.savefig(filename, dpi=300, bbox_inches='tight')
-plt.show()
+# player_makes = player_data.loc[player_data['SHOT_MADE_FLAG'] == 1]
+# player_misses = player_data.loc[player_data['SHOT_MADE_FLAG'] == 0]
+#
+# mpl.rcParams['font.family'] = 'Avenir'
+# mpl.rcParams['font.size'] = 18
+# mpl.rcParams['axes.linewidth'] = 2
+#
+# fig = plt.figure(figsize=(4, 3.76))
+# ax = fig.add_axes([0, 0, 1, 1])
+#
+# ax = create_court(ax, 'black')
+#
+# ax.plot(player_misses['LOC_X'], player_misses['LOC_Y'] + 60, 'ro')
+# ax.plot(player_makes['LOC_X'], player_makes['LOC_Y'] + 60, 'go')
+#
+#
+# ax.text(0, 1.05, note, transform=ax.transAxes, ha = 'left', va = 'baseline')
+#
+# plt.savefig(filename, dpi=300, bbox_inches='tight')
+# plt.show()
