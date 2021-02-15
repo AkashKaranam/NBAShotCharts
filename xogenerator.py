@@ -200,7 +200,7 @@ rows = relevant_data['rowSet']
 player_data = pd.DataFrame(rows)
 player_data.columns = headers
 
-player_data.to_csv('data.csv', index=False)
+# player_data.to_csv('data.csv', index=False)
 
 
 player_makes = player_data.loc[player_data['SHOT_MADE_FLAG'] == 1]
