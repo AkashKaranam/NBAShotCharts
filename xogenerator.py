@@ -4,10 +4,47 @@ import requests
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from tkinter import *
+
 
 teams = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/teams.json').text)
 players = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/players.json').text)
-#print(players)
+# print(players)
+def list_first_names():
+    first_names = []
+    for player in players:
+        first_names.append(player['firstName'])
+    first_names.sort()
+    return first_names
+
+def list_last_names():
+    last_names = []
+    for player in players:
+        last_names.append(player['lastName'])
+    last_names.sort()
+    return last_names
+
+def list_team_abrevs():
+    team_abrevs = []
+    for team in teams:
+        team_abrevs.append(team['abbreviation'])
+    return team_abrevs
+
+def list_season_numbers():
+    seasons = []
+    seasons.append('2016-17')
+    seasons.append('2017-18')
+    seasons.append('2018-19')
+    seasons.append('2019-20')
+    seasons.append('2020-21')
+    return seasons
+
+def list_season_types():
+    types = []
+    types.append('Regular Season')
+    types.append('Playoffs')
+    return types
+
 def get_team_id(teamName):
     for team in teams:
         if team['teamName'] == teamName:
@@ -19,6 +56,7 @@ def get_player_id(first,last):
         if player['firstName'] == first and player['lastName'] == last:
             return player['playerId']
     return -1
+
 def get_player_team(first,last):
     for player in players:
         if player['firstName'] == first and player['lastName'] == last:
@@ -26,10 +64,83 @@ def get_player_team(first,last):
             for team in teams:
                 if team_id == team['teamId']:
                     return team['teamName']
+    return 'Nonexistent team'
+
 def get_team_name(teamAbr):
     for team in teams:
         if(team['abbreviation'] == teamAbr):
             return team['teamName']
+    return 'Nonexistent team'
+
+def user_interface():
+    root = Tk()
+    root.title("Dropdown Menu for NBA Shot Chart")
+    root.geometry("400x400")
+
+    # first name block
+    firstname_T = Text(root, height=2, width=30)
+    firstname_T.pack()
+    firstname_T.insert(END, "Choose Player's First Name")
+
+    first_name_list = list_first_names()
+    first_name_choice = StringVar()
+    first_name_choice.set(first_name_list[0])
+    firstname_drop = OptionMenu(root, first_name_choice, *first_name_list)
+    firstname_drop.pack()
+    # -----------------------------------------------------------------------------
+
+    # last name block
+    lastname_T = Text(root, height=2, width=30)
+    lastname_T.pack()
+    lastname_T.insert(END, "Choose Player's Last Name")
+
+    last_name_list = list_last_names()
+    last_name_choice = StringVar()
+    last_name_choice.set(last_name_list[0])
+    lastname_drop = OptionMenu(root, last_name_choice, *last_name_list)
+    lastname_drop.pack()
+    # -----------------------------------------------------------------------------
+
+    # season block
+    season_T = Text(root, height=2, width=30)
+    season_T.pack()
+    season_T.insert(END, "Choose a season")
+
+    season_list = list_season_numbers()
+    season_number_choice = StringVar()
+    season_number_choice.set(season_list[0])
+    season_drop = OptionMenu(root, season_number_choice, *season_list)
+    season_drop.pack()
+    # -----------------------------------------------------------------------------
+
+    # team name(two cases)
+    abbrev_T = Text(root, height=2, width=30)
+    abbrev_T.pack()
+    abbrev_T.insert(END, "Choose a team abbreviation")
+
+    abbrev_list = list_team_abrevs()
+    abbrev_choice = StringVar()
+    abbrev_choice.set(abbrev_list[0])
+    abbrev_drop = OptionMenu(root, abbrev_choice, *abbrev_list)
+    abbrev_drop.pack()
+    # -------------------------------------------------------------------------------
+
+    # team type block
+    type_T = Text(root, height=2, width=30)
+    type_T.pack()
+    type_T.insert(END, "Choose a season type")
+
+    type_list = list_season_types()
+    type_choice = StringVar()
+    type_choice.set(type_list[0])
+    type_drop = OptionMenu(root, type_choice, *type_list)
+    type_drop.pack()
+
+    root.mainloop()
+
+    return first_name_choice.get(), last_name_choice.get(), season_number_choice.get(), abbrev_choice.get(), type_choice.get()
+
+
 
 def create_court(ax, color):
     ax.plot([-220, -220], [0, 140], linewidth=2, color=color)
@@ -55,17 +166,16 @@ def create_court(ax, color):
 
     return ax
 
-player_first_name = input("Enter the player's first name: ")
-player_last_name = input("Enter the player's last name: ")
-season_nullable = input("Enter the season: ")
-if season_nullable == '2020-21':
-    player_team = get_player_team(player_first_name, player_last_name)
-else:
-    player_team_abr = input("Enter the player's team's abbreviation: ")
-    player_team = get_team_name(player_team_abr)
+
+inputs = user_interface()
+print(inputs)
+player_first_name = inputs[0]
+player_last_name = inputs[1]
+season_nullable = inputs[2]
+player_team = get_team_name(inputs[3])
 context_measure_simple = 'FGA'
 
-season_type_all_start = input("Enter the season type: ")
+season_type_all_start = inputs[4]
 
 team_id = get_team_id(player_team)
 player_id = get_player_id(player_first_name, player_last_name)
