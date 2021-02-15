@@ -11,18 +11,20 @@ teams = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/ma
 players = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/players.json').text)
 # print(players)
 def list_first_names():
-    first_names = []
+    first_names = set()
     for player in players:
-        first_names.append(player['firstName'])
-    first_names.sort()
-    return first_names
+        first_names.add(player['firstName'])
+    first_names_list = list(first_names)
+    first_names_list.sort()
+    return first_names_list
 
 def list_last_names():
-    last_names = []
+    last_names = set()
     for player in players:
-        last_names.append(player['lastName'])
-    last_names.sort()
-    return last_names
+        last_names.add(player['lastName'])
+    last_names_list = list(last_names)
+    last_names_list.sort()
+    return last_names_list
 
 def list_team_abrevs():
     team_abrevs = []
