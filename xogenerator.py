@@ -138,6 +138,9 @@ def user_interface():
     type_drop = OptionMenu(root, type_choice, *type_list)
     type_drop.pack()
 
+    exit_button = Button(root, text = "Submit", command = root.quit)
+    exit_button.pack(pady=20)
+
     root.mainloop()
 
     return first_name_choice.get(), last_name_choice.get(), season_number_choice.get(), abbrev_choice.get(), type_choice.get()
