@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+# load team and player data from nba.com
 teams = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/teams.json').text)
 players = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/players.json').text)
 # print(teams)
@@ -12,17 +13,35 @@ players = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/
 
 
 def get_team_id(teamName):
+    '''
+    Output team id from team name
+    :param teamName: string representing a teamName
+    :return: nba.com team id for the given teamName or -1 if the teamName is invalid
+    '''
     for team in teams:
         if team['teamName'] == teamName:
             return team['teamId']
     return -1
 
 def get_player_id(first,last):
+    '''
+    Output the player id from their first and last name
+    :param first: string representing the first name of the player
+    :param last: string representing the last name of the player
+    :return: the nba.com player id of the given player name
+    '''
     for player in players:
         if player['firstName'] == first and player['lastName'] == last:
             return player['playerId']
     return -1
 def create_court(ax, color):
+    '''
+    Method to draw the court
+    :param ax: axis object used to draw the court
+    :param color: color of the lines and curves on the court
+    :return: an axis object representing the court
+    '''
+
     ax.plot([-220, -220], [0, 140], linewidth=2, color=color)
     ax.plot([220,220], [0,140], linewidth=2, color=color)
     ax.add_artist(mpl.patches.Arc((0,140), 440, 315, theta1 = 0,

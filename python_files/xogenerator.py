@@ -185,7 +185,7 @@ season_type_all_start = inputs[4]
 team_id = get_team_id(player_team)
 player_id = get_player_id(player_first_name, player_last_name)
 note = player_first_name + " " + player_last_name + "\n" + season_nullable + " " + season_type_all_start
-filename = "Images/MakesMisses_" + player_first_name + player_last_name + "_" + season_nullable + ".png"
+filename = "../Images/MakesMisses_" + player_first_name + player_last_name + "_" + season_nullable + ".png"
 
 shot_json = shotchartdetail.ShotChartDetail(
     team_id = team_id,
