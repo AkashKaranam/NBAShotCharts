@@ -39,7 +39,7 @@ def list_last_names():
 def list_team_abrevs():
     team_abrevs = []
     for team in teams:
-        team_abrevs.append(teams['abbreviation'])
+        team_abrevs.append(team['abbreviation'])
     return team_abrevs
 def list_team_names():
     team_names = []
@@ -81,6 +81,8 @@ def get_player_team(first,last):
                 if team_id == team['teamId']:
                     return team['teamName']
     return 'Nonexistent team'
+
+
 
 def get_team_name(teamAbr):
     for team in teams:
@@ -193,13 +195,51 @@ def create_court(ax, color):
     ax.set_ylim(0, 470)
 
     return ax
+def split_string(location):
+    index = -1
+    for i in range(len(location)):
+        if location[i] == ' ':
+            index = i
+    return location[:index], location[index+1:]
 
-def compute_league_averages(location):
-    print(location)
+
+def compute_league_averages(zone):
+    area = zone[0]
+    dict = {'(R)':'Right Side(R)', '(C)':'Center(C)', '(L)':'Left Side(L)', '(RC)': 'Right Side Center(RC)', '(LC)': 'Left Side Center(LC)'}
+    side = dict[zone[1]]
+    total_makes = 0
+    total_shots = 0
+    for player in players:
+        team_id = player['teamId']
+        player_id = player['playerId']
+        context_measure_simple = 'FGA'
+        season_nullable = '2020-21'
+        season_type_all_start = 'Regular Season'
+        player_shot_json = shotchartdetail.ShotChartDetail(
+            team_id=team_id,
+            player_id=player_id,
+            context_measure_simple=context_measure_simple,
+            season_nullable=season_nullable,
+            season_type_all_star=season_type_all_start)
+        player_shot_data = json.loads(player_shot_json.get_json())
+        player_relevant_data = player_shot_data['resultSets'][0]
+        headers = player_relevant_data['headers']
+        rows = player_relevant_data['rowSet']
+
+        player_data = pd.DataFrame(rows)
+        player_data.columns = headers
+
+        player_data = player_data.loc[(player_data['SHOT_ZONE_BASIC'] == area) & (player_data['SHOT_ZONE_AREA'] == side)]
+        total_shots += player_data.shape[0]
+        total_makes += player_data["SHOT_MADE_FLAG"].sum()
+
+    return total_makes, total_shots
+
+
 
 
 inputs = user_interface()
-print(inputs)
+#print(inputs)
 player_first_name = inputs[0]
 player_last_name = inputs[1]
 season_nullable = inputs[2]
@@ -252,3 +292,4 @@ ax.text(0, 1.05, note, transform=ax.transAxes, ha = 'left', va = 'baseline')
 
 plt.savefig(filename, dpi=300, orientation = 'landscape', bbox_inches='tight')
 plt.show()
+
