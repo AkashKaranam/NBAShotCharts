@@ -18,6 +18,15 @@ def list_first_names():
     first_names_list.sort()
     return first_names_list
 
+def list_filtered_last_names(first_name):
+    last_names = set()
+    for player in players:
+        if player['firstName'] == first_name:
+            last_names.add(player['lastName'])
+    last_names_list = list(last_names)
+    last_names_list.sort()
+    return last_names_list
+
 def list_last_names():
     last_names = set()
     for player in players:
@@ -26,12 +35,17 @@ def list_last_names():
     last_names_list.sort()
     return last_names_list
 
+
 def list_team_abrevs():
     team_abrevs = []
     for team in teams:
-        team_abrevs.append(team['abbreviation'])
+        team_abrevs.append(teams['abbreviation'])
     return team_abrevs
-
+def list_team_names():
+    team_names = []
+    for team in teams:
+        team_names.append(team['teamName'])
+    return team_names
 def list_season_numbers():
     seasons = []
     seasons.append('2016-17')
@@ -73,7 +87,13 @@ def get_team_name(teamAbr):
         if(team['abbreviation'] == teamAbr):
             return team['teamName']
     return 'Nonexistent team'
+# def callback(input):
+#     file = open('name.txt','w')
+#     file.write(input)
+#     file.close()
 
+# def update():
+#     print("First name selected")
 def user_interface():
     root = Tk()
     root.title("Dropdown Menu for NBA Shot Chart")
@@ -84,14 +104,18 @@ def user_interface():
     firstname_T.pack()
     firstname_T.insert(END, "Choose Player's First Name")
 
+
     first_name_list = list_first_names()
-    first_name_choice = StringVar()
+    first_name_choice = StringVar(root)
     first_name_choice.set(first_name_list[0])
     firstname_drop = OptionMenu(root, first_name_choice, *first_name_list)
+    # print(first_name_choice.get())
     firstname_drop.pack()
     # -----------------------------------------------------------------------------
-
+    # print(selection)
     # last name block
+    # f = open('name.txt', 'r')
+    # print("The contents of the file are " + f.read())
     lastname_T = Text(root, height=2, width=30)
     lastname_T.pack()
     lastname_T.insert(END, "Choose Player's Last Name")
@@ -118,13 +142,13 @@ def user_interface():
     # team name(two cases)
     abbrev_T = Text(root, height=2, width=30)
     abbrev_T.pack()
-    abbrev_T.insert(END, "Choose a team abbreviation")
+    abbrev_T.insert(END, "Choose a team name")
 
-    abbrev_list = list_team_abrevs()
-    abbrev_choice = StringVar()
-    abbrev_choice.set(abbrev_list[0])
-    abbrev_drop = OptionMenu(root, abbrev_choice, *abbrev_list)
-    abbrev_drop.pack()
+    team_list = list_team_names()
+    team_choice = StringVar()
+    team_choice.set(team_list[0])
+    team_drop = OptionMenu(root, team_choice, *team_list)
+    team_drop.pack()
     # -------------------------------------------------------------------------------
 
     # team type block
@@ -143,14 +167,14 @@ def user_interface():
 
     root.mainloop()
 
-    return first_name_choice.get(), last_name_choice.get(), season_number_choice.get(), abbrev_choice.get(), type_choice.get()
+    return first_name_choice.get(), last_name_choice.get(), season_number_choice.get(), team_choice.get(), type_choice.get()
 
 
 
 def create_court(ax, color):
     ax.plot([-220, -220], [0, 140], linewidth=2, color=color)
-    ax.plot([220,220], [0,140], linewidth=2, color=color)
-    ax.add_artist(mpl.patches.Arc((0,140), 440, 315, theta1 = 0,
+    ax.plot([220, 220], [0, 140], linewidth=2, color=color)
+    ax.add_artist(mpl.patches.Arc((0, 140), 440, 315, theta1 = 0,
         theta2 = 180, facecolor = 'none', edgecolor=color, lw=2))
 
     ax.plot([-80,-80], [0, 190], linewidth=2, color=color)
@@ -171,13 +195,12 @@ def create_court(ax, color):
 
     return ax
 
-
 inputs = user_interface()
 print(inputs)
 player_first_name = inputs[0]
 player_last_name = inputs[1]
 season_nullable = inputs[2]
-player_team = get_team_name(inputs[3])
+player_team = inputs[3]
 context_measure_simple = 'FGA'
 
 season_type_all_start = inputs[4]
