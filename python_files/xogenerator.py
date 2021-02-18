@@ -91,7 +91,6 @@ def get_team_name(teamAbr):
 #     file = open('name.txt','w')
 #     file.write(input)
 #     file.close()
-
 # def update():
 #     print("First name selected")
 def user_interface():
@@ -195,6 +194,10 @@ def create_court(ax, color):
 
     return ax
 
+def compute_league_averages(location):
+    print(location)
+
+
 inputs = user_interface()
 print(inputs)
 player_first_name = inputs[0]
@@ -226,7 +229,7 @@ rows = relevant_data['rowSet']
 player_data = pd.DataFrame(rows)
 player_data.columns = headers
 
-# player_data.to_csv('data.csv', index=False)
+player_data.to_csv('../data.csv', index=False)
 
 
 player_makes = player_data.loc[player_data['SHOT_MADE_FLAG'] == 1]
