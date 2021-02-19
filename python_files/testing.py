@@ -33,14 +33,7 @@ from tkinter import *
 #
 # root.mainloop()
 
-#players = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/players.json').text)
-players = [
-{
-    "firstName": "Lonzo",
-    "lastName": "Ball",
-    "playerId": 1628366,
-    "teamId": 1610612740
-}]
+players = json.loads(requests.get('https://raw.githubusercontent.com/bttmly/nba/master/data/players.json').text)
 def split_string(location):
     index = -1
     for i in range(len(location)):
@@ -49,7 +42,7 @@ def split_string(location):
     return location[:index], location[index+1:]
 
 
-def compute_league_averages(zone):
+def compute_league_averages(zone,x):
     area = zone[0]
     # print("The area is " + area)
     dict = {'(R)': 'Right Side(R)', '(C)': 'Center(C)', '(L)': 'Left Side(L)', '(RC)': 'Right Side Center(RC)',
@@ -58,7 +51,7 @@ def compute_league_averages(zone):
     # print("The side is " + side)
     total_makes = 0
     total_shots = 0
-    for player in players:
+    for player in players[x:x+5]:
         # print(player[''])
         team_id = player['teamId']
         player_id = player['playerId']
@@ -88,15 +81,37 @@ def compute_league_averages(zone):
             player_data.columns = headers
             # print(player_data.head())
             # print(player_data.columns)
-            player_data.to_csv('lameloballbefore.csv', index=False)
+            #player_data.to_csv('lameloballbefore.csv', index=False)
             player_data = player_data.loc[(player_data['SHOT_ZONE_BASIC'] == area) & (player_data['SHOT_ZONE_AREA'] == side)]
-            player_data.to_csv('lameloball.csv', index=False)
+            #player_data.to_csv('lameloball.csv', index=False)
             total_shots += player_data.shape[0]
             total_makes += player_data["SHOT_MADE_FLAG"].sum()
+    file = open('rightcorner3.txt','a')
+    res = str(total_makes) + ' ' + str(total_shots) + '\n'
+    file.write(res)
+    # return total_makes, total_shots
 
-    return total_makes, total_shots
+def driver(zone):
+    made_shots = 0
+    total_shots = 0
+    for i in range(0, 100):
+        block = compute_league_averages(zone, 5 * i)
+        made_shots += block[0]
+        total_shots += block[1]
+
+    return made_shots, total_shots, made_shots / total_shots
 
 location = "Right Corner 3 (R)"
 zone = split_string(location)
-#print(zone)
-print(compute_league_averages(zone))
+start = input("Enter the starting value: ")
+print(compute_league_averages(zone, int(start)))
+# print(driver(zone))
+# def driver(zone):
+#     made_shots = 0
+#     total_shots = 0
+#     for i in range(0,100):
+#         block = compute_league_averages(zone, 5*i)
+#         made_shots+=block[0]
+#         total_shots+=block[1]
+#
+#     return made_shots, total_shots, made_shots/total_shots
