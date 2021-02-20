@@ -48,10 +48,11 @@ def compute_league_averages(zone,x):
     dict = {'(R)': 'Right Side(R)', '(C)': 'Center(C)', '(L)': 'Left Side(L)', '(RC)': 'Right Side Center(RC)',
             '(LC)': 'Left Side Center(LC)'}
     side = dict[zone[1]]
+
     # print("The side is " + side)
     total_makes = 0
     total_shots = 0
-    for player in players[x:x+5]:
+    for player in players[x:x+1]:
         # print(player[''])
         team_id = player['teamId']
         player_id = player['playerId']
@@ -86,9 +87,12 @@ def compute_league_averages(zone,x):
             #player_data.to_csv('lameloball.csv', index=False)
             total_shots += player_data.shape[0]
             total_makes += player_data["SHOT_MADE_FLAG"].sum()
-    file = open('rightcorner3.txt','a')
+
+    file = open('leftcorner3.txt', 'a')
     res = str(total_makes) + ' ' + str(total_shots) + '\n'
     file.write(res)
+    file.close()
+
     # return total_makes, total_shots
 
 def driver(zone):
@@ -101,10 +105,21 @@ def driver(zone):
 
     return made_shots, total_shots, made_shots / total_shots
 
-location = "Right Corner 3 (R)"
-zone = split_string(location)
-start = input("Enter the starting value: ")
-print(compute_league_averages(zone, int(start)))
+location1 = "Right Corner 3 (R)"
+location2 = "Left Corner 3 (L)"
+location3 = "Mid-range (L)"
+location4 = "Mid-range (C)"
+location5 = "Mid-range (R)"
+location6 = "Mid-range (RC)"
+
+zone1 = split_string(location1)
+zone2 = split_string(location2)
+zone3 = split_string(location3)
+zone4 = split_string(location4)
+zone5 = split_string(location5)
+zone6 = split_string(location6)
+start = sys.argv[1]
+print(compute_league_averages(zone2, int(start)))
 # print(driver(zone))
 # def driver(zone):
 #     made_shots = 0
